@@ -35,14 +35,7 @@
 
         test-project = let
           lib = pkgs.lib;
-
-          # Import the Mix deps into Nix by running, mix2nix > nix/deps.nix
-          mixNixDeps0 = import ./deps.nix { inherit lib beamPackages; };
-          # Rebar3 needs PC plugin to compile erlexec
-          # we override the buildPlugin for `buildRebar3` packages and recompile exec
-          erlexec = mixNixDeps0.erlexec.override { buildPlugins = [beamPackages.pc]; };
-          # override the default erlexec from mixNixDeps0 with the custom erlexec
-          mixNixDeps = mixNixDeps0 // { erlexec = erlexec; };
+          mixNixDeps = import ./deps.nix { inherit lib beamPackages; };
 
         in beamPackages.mixRelease {
           pname = "test-proj";
@@ -54,17 +47,6 @@
           erlang = erlang;
 
           inherit mixNixDeps;
-
-          # Add other inputs to the build if you need to
-          # TODO Check if we to use glibcLocales
-          # nativeBuildInputs = with pkgs; [
-          #   go
-          #   libcap
-          #   ffmpeg
-          #   vips
-          #   glibc
-          #   glibcLocales
-          # ];
         };
       in
         {
